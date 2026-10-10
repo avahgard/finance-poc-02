@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101923">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Finance POC-02">
+  <meta name="description" content="Эксперимент: Passkey PRF и офлайн-расшифровка локальной тестовой записи">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; connect-src 'self'">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" type="module"></script>
+  <title>Finance POC-02 · Secure Unlock</title>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">ТЕХНИЧЕСКИЙ ЭКСПЕРИМЕНТ · POC-02</p>
+      <h1>Проверка Face ID</h1>
+      <p class="sub">Проверяем, может ли установленная PWA офлайн расшифровать локальную запись с помощью Passkey PRF.</p>
+    </header>
+    <section class="card statuses" aria-label="Состояние">
+      <div><span>Интернет</span><strong id="network">Проверка…</strong></div>
+      <div><span>Offline-кэш</span><strong id="cache">Проверка…</strong></div>
+      <div><span>IndexedDB</span><strong id="db-status">Проверка…</strong></div>
+      <div><span>WebAuthn / Web Crypto</span><strong id="support">Проверка…</strong></div>
+    </section>
+    <section class="card" id="enroll-panel" hidden>
+      <h2>1. Создать защищённую запись</h2>
+      <p class="hint">Придумай любую <b>вымышленную</b> запись. Не вводи реальные суммы, пароли или личную информацию.</p>
+      <label for="note">Тестовая запись</label>
+      <input id="note" type="text" maxlength="100" autocomplete="off" spellcheck="false" placeholder="Например, Тест 11,75 BYN">
+      <button id="enroll" type="button">Шаг 1 · Создать Passkey</button>
+      <button id="finish" type="button" hidden>Шаг 2 · Проверить PRF и зашифровать</button>
+      <p class="hint">Мы разделили два системных запроса на отдельные кнопки для надёжной работы Safari. После создания Passkey нажми «Шаг 2».</p>
+    </section>
+    <section class="card" id="unlock-panel" hidden>
+      <h2>2. Разблокировка</h2>
+      <div class="lock-state" id="lock-state" aria-live="polite">Заблокировано</div>
+      <div id="secret-zone" hidden>
+        <p class="hint">Расшифрованная тестовая запись:</p>
+        <div class="secret" id="secret"></div>
+      </div>
+      <div class="actions">
+        <button id="unlock" type="button">Разблокировать через Passkey</button>
+        <button id="lock" type="button" class="secondary" hidden>Заблокировать</button>
+      </div>
+      <p class="hint">При уходе из приложения запись автоматически скрывается. После нового запуска потребуется повторная разблокировка.</p>
+    </section>
+    <section class="card" id="technical-panel" hidden>
+      <h2>Техническая проверка</h2>
+      <div class="statuses">
+        <div><span>Данные</span><strong id="encrypted">—</strong></div>
+        <div><span>Passkey PRF</span><strong id="prf-status">Не проверено</strong></div>
+      </div>
+      <p class="hint">В IndexedDB хранится шифртекст, но не исходная тестовая запись или криптографический ключ.</p>
+    </section>
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+    <section class="notice">
+      <b>Важно</b>
+      <p>Это не готовая система защиты денег. Здесь <b>нет</b> отдельного 6-значного PIN, облачной резервной копии и восстановления Passkey. PIN остаётся открытым вопросом архитектуры.</p>
+      <p>Passkey может использовать Face ID <b>или системный код устройства</b>. Это решает iOS, а не наша PWA.</p>
+      <p>Нельзя использовать настоящий финансовый архив. Для POC допустимы только вымышленные данные.</p>
+    </section>
+  </main>
+</body>
+</html>
